@@ -316,7 +316,7 @@ var advanceReference = new
     IKOFReference = result.UIDRequest,
     IssuedAt = advance.ReceiptTime
 };
-//2. Delate partialy or full amount of the advance payment
+//2. Delete partialy or full amount of the advance payment
 var correctiveInvoice = ReceiptBuilder.Build(Guid.NewGuid(), 2)
     ...
     .SetCorrectiveInvoice()
