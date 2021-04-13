@@ -249,9 +249,9 @@ Stavke dodajemo na sledeci nacin
 Osim standardnih racuna, moguce je i brisanje racuna, kreiranje avansnih racuna i porudzbina.
 
 Tipovi u modelu su:
-- INVOICE - racun, sve stavke moraju imati pozitivne kolicine
-- CORRECTIVE_INVOICE - korektivni racuni, potrebno je navesti i povezane racune koji se koriguju ovim racunom, kolicine su negativne
-- SUMMARY_INVOICE - grupni racuni, potrebno je navesti i povezane racune kojima je nacin placanja ORDER, a koji se zavtvaraju ovim racunom
+- __INVOICE__ - gotovinski ili bezgotovinski racun, sve stavke moraju imati pozitivne kolicine
+- __CORRECTIVE_INVOICE__ - korektivni racuni, potrebno je navesti i povezane racune koji se koriguju ovim racunom, kolicine su negativne
+- __SUMMARY_INVOICE__ - grupni racuni, potrebno je navesti i povezane racune kojima je nacin placanja ORDER, a koji se zavtvaraju ovim racunom
 
 Za postavljanje korektivnog, ili sumarnog racuna, koristimo sledece metode:
 
