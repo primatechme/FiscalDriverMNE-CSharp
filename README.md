@@ -146,6 +146,12 @@ receipt.CalculateTotalAmount("CASH")
 return await service.CreateReceipt(receipt.ToXMLModel());
 ```   
 
+Kreirani racun saljemo istim servisom, kao kod depozita, metodom _CreateReceipt_
+``` 
+var service = new FiscalApiService(BASE_URL, TOKEN);
+return await service.CreateReceipt(receipt.ToXMLModel());
+``` 
+
 ## Primjer bezgotovinskog racuna
 
 Za bezgotovinske racune, postaviti __SetIsCash__ na _false_.
