@@ -181,11 +181,11 @@ __IKOF__ je _UIDRequest_.
 _ResponseCode_ je __JIKR__ racuna.
 
 Za svaki racun je potrebno prikazati sledece podatke:
-1. Qr kod - kod koji sadrzi vrijednost __url.Value__ , link ka racunu na portalu poreske uprave
-2. Datum i vrijeme fiskalizacije - vrijeme iz URL-a
-3. Broj racuna
-4. IKOF - jednistveni identifikator racuna, koga kreira fiskalni servis
-5. JIKR - odgovor iz poreske uprave
+1. __Qr kod__ - kod koji sadrzi vrijednost __url.Value__ , link ka racunu na portalu poreske uprave
+2. __Datum i vrijeme fiskalizacije__ - vrijeme iz URL-a
+3. __Broj racuna__ - redni broj racuna
+4. __IKOF__ - jednistveni identifikator racuna, koga kreira fiskalni servis
+5. __JIKR__ - odgovor iz poreske uprave
 
 Svi podaci neophodni za racun nalaze se u polju __Url.Value__. Oni se mogu parsirati metodom iz __EFCommandResponse__ odgovora, __ToModel()__.
 Odgovor je __EFUrlContent__, JSON je dat ispod.
@@ -204,15 +204,15 @@ Odgovor je __EFUrlContent__, JSON je dat ispod.
       "Url": "https://efitest.tax.gov.me/ic/#/verify?iic=A8B1EEA971BF47E06979E099142CEBB9&tin=02863782&crtd=2021-04-13T12:54:27+02:00&ord=2&bu=lv970pg430&cr=ck788xq400&sw=pf099nu664&prc=120.00"
     }
 ``` 
-- IIC - IKOF
-- Tin - PIB
-- CreationDate - datum i vrijeme fiskalizacije
-- DocumentNumber - broj racuna
-- BusinessUnitCode - kod poslovne jedinice
-- TCRCode - kod elektronskog naplatnog uredjaja
-- SoftwareCode - kod softvera
-- TotalPrice - ukupna cijena
-- Url - url koji treba da bude sadrzaj prikazanog QR koda
+- __IIC__ - IKOF
+- __Tin__ - PIB
+- __CreationDate__ - datum i vrijeme fiskalizacije
+- __DocumentNumber__ - broj racuna
+- __BusinessUnitCode__ - kod poslovne jedinice
+- __TCRCode__ - kod elektronskog naplatnog uredjaja
+- __SoftwareCode__ - kod softvera
+- __TotalPrice__ - ukupna cijena
+- __Url__ - url koji treba da bude sadrzaj prikazanog QR koda
 
 Predlog je da se u bazi podataka cuvaju JIKR racuna i URL, ili JIKR, URL i ostali parsirani elementi racuna koji su potrebni za prikaz za racunu.
 Broj racuna prikazati u formatu:
@@ -242,22 +242,22 @@ Stavke dodajemo na sledeci nacin
 ## Nacini placanja
     
 Gotovinski nacini placanja su
--BANKNOTE
--CARD
--ADVANCE
--ORDER
--OTHER-CASH
+- BANKNOTE
+- CARD
+- ADVANCE
+- ORDER
+- OTHER-CASH
 
 Bezgotovinski nacini placanja su
--BUSINESSCARD
--COMPANY
--ACCOUNT
--OTHER
--ADVANCE
+- BUSINESSCARD
+- COMPANY
+- ACCOUNT
+- OTHER
+- ADVANCE
 
 Ostali nacini placanja su i
--SVOUCHER
--FACTORING
+- SVOUCHER
+- FACTORING
 
 Nacine placanja mozemo dodati redom, sa iznosom (pojedinacno ili kombinovano placanje)
 ``` 
