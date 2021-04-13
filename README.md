@@ -77,15 +77,15 @@ Poruke gresaka su na engleskom jeziku, i iz sadrzaja polja __ErrorMessage__ lako
 
 Prvo instanciramo model racuna. U konstruktoru se predaje jedinstveni identifikator racuna (Guid) i redni broj racuna. Zatim pozivamo sledece metode: 
 
-- SetTCRCode - postavljamo kod elektrnonskog naplatnog uredjaja.
-- SetDates - postavljamo datum racuna i valute, u primjeru valute nema
-- SetIsCash - da li je racun gotovinski ili bezgotovinski
-- SetUser - postavljamo naziv i kod operatera
-- SetSeller - unosimo podatke o firmi, prodavcu (naziv, pib i adresa firme koja izdaje racun)
-- SetBuyer - unosimo podatke o kupcu, ukoliko ih imamo (neophodno za virmanske racune)
-- AddSaleItem - dodajemo stavke prodaje
-- CalculateTotalAmount postavljamo nacin placanja, i pustamo biblioteku da preracuna ukupan iznos iz stavki, ili
-- AddPayment - dodamo jedan ili vise nacina placanja.
+- __SetTCRCode__ - postavljamo kod elektrnonskog naplatnog uredjaja.
+- __SetDates__ - postavljamo datum racuna i valute, u primjeru valute nema
+- __SetIsCash__ - da li je racun gotovinski ili bezgotovinski
+- __SetUser__ - postavljamo naziv i kod operatera
+- __SetSeller__ - unosimo podatke o firmi, prodavcu (naziv, pib i adresa firme koja izdaje racun)
+- __SetBuyer__ - unosimo podatke o kupcu, ukoliko ih imamo (neophodno za virmanske racune)
+- __AddSaleItem__ - dodajemo stavke prodaje
+- __CalculateTotalAmount__ - postavljamo nacin placanja, i pustamo biblioteku da preracuna ukupan iznos iz stavki, ili
+- __AddPayment__ - dodamo jedan ili vise nacina placanja.
 
 ## Primjer gotovinskog racuna
 ```
