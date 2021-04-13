@@ -1,85 +1,58 @@
-# Biblioteka Primatech.FondZdravstvaWS 
+# FiscalDriverMNE-CSharp
+Fiskalni drajver je namjenjen za komunikaciju sa servisom Poreske uprave Crne Gore. 
 
-.NET client za pristup web servisu FZOCG.
+# Kako koristiti FiscalDriverMNE
+Za rad fiskalnog drajvera potrebno je obezbjediti:
+1. Certifikat za fiskalizaciju
+2. Unijeti podatke na portal Poreske uprave o poslovnom prostoru i operaterima
+3. Dobiti aktivacioni kod za upotrebu biblioteka
+4. U kodu softvera slati kod poslovnog prostora i operatera (uz ostale podatke o racunu ili depozitu)
 
-U folderu Primatech.FondZdravstvaWS.Sample se nalazi primjer korišćenja biblioteke. Pogledati fajl *Primatech.FondZdravstvaWS.Sample/Program.cs*
+Za detalje nas mozete kontaktirati na support@primatech.me.
 
+__Nacin rada:__ 
+1. Ukoliko se kreiraju samo bezgotovinski racuni, depozit se ne salje. 
+2. Za gotovinske racune, svaki radni dan je neophodno zapoceti unosom depozita.
 
-## Konfiguracija
+# Prvi korak
+U projektu se nalaze dva __*.dll__ fajla koja treba dodati u projekat. 
+To su:
+1. _Primatech.FiscalDriver_
+2. _Primatech.FiscalModels_
+
+Pogledati na kraju dokumenta moguce greske pri kompajliranju.
  
-Instancirati prvo *config* objekat sa parametrima za apoteku.
+# Kreiranje depozita
 
-    var config = new FondZdravstvaWSConfig {
-        // Obavezno - sifra koju su sve ustanove dobile od fonda
-        SifraUstanove = USTANOVA_ID,
-        
-        // Sifra organizacione jedinice - dobija se pozivom 
-        // sifarnika GetOrganizacioneJedinice
-        OrgJedinicaId = ORG_JEDINICA,
-        
-        // Korisnicko ime i lozinka koje su ustanove dobile od fonda, potpisom ugovora
-        Username = USERNAME,
-        Password = PASSWORD
-    };
-    
-## Klijent
+Inicijalni depozit (nula ili iznos veci od nule) se moze poslati samo jednom na pocetku radnog dana. Ukoliko je bilo kucanja racuna tog dana, depozit se vise ne moze poslati.
+U slucaju da zelimo povuci novac iz kase saljemo iznos manji od nule. 
 
-U konstruktoru servisa predati *config* objekat.<br />
-**Napomena**: Sve metode iz oba servisa su implemetarana u ovom klijentu.
+__Bitno:__ Za gotovinske racune, svaki radni dan je neophodno zapoceti unosom depozita.
+```
+var deposit = DepositBuilder.Build("**********", 25m)
+                 //.SetTime(DateTime.Now)
+                 //.SetAmount(25m)
+                 .SetUser("Marko Markovic", "**********");
+```
+# Kreiranje racuna
 
-    var client = new FondZdravstvaWSClient(config);
-    
-## Poziv metoda servisa
+## Greska u nekompatibilnosti *Newtonsoft.Json* biblioteke
+Potrebno je povesti racuna o verziji __NewtSoft.Json__ biblioteke, ukoliko se u projektu koristi druga verzija, od one koja je u navedenim bibliotekama. 
+U tom slucaju u AppConfig fajlu dodati sledece:
 
-Primjer pozivanja sifarnika proizvodjaca.
+```
+<runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+  <dependentAssembly>
+    <assemblyIdentity name="Newtonsoft.Json" publicKeyToken="30ad4fe6b2a6aeed" culture="neutral" />
+    <bindingRedirect oldVersion="0.0.0.0-11.0.0.0" newVersion="11.0.0.0" />
+  </dependentAssembly>
+  ..
+</runtime>
+```
 
-    var result = client.GetProizvodjaci();
-    
-## Slanje fajla (sa putanjom)
-
-Za slanje fajla direktno, predati punu putanju do fajla.
-
-    string fileName=<enter full path here>;
-    var result = client.PostLagerFromFile(fileName);
-
-# Problemi
-## Verzija Visual Studio
-Koristiti VS2015 i novije. Za starije VS zamjeniti liniju 
-      
-      if (Int32.TryParse(res,var out broj))
-sa
-      
-      var broj = 0;
-      if (Int32.TryParse(res, out broj))
-            
 ## Greska "The request was aborted: Could not create SSL/TLS secure channel"
-Prije instanciranja Configa dodati sledece dvije linije koda.
+Prije pozivanja servisa u projektu dodati sledece dvije linije koda.
 
     ServicePointManager.Expect100Continue = true;
     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-# Open source licenca
-
-
-
-    The MIT License
-
-    Copyright (c) 2018 Primatech, doo. http://www.primatech.me
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
