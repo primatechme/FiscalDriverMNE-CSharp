@@ -310,7 +310,7 @@ var advance = ReceiptBuilder.Build(Guid.NewGuid(), 1)
       .CalculateTotalAmount(EFIPaymentTypeEnum.ADVANCE);
 
 var result = await SendReceipt(advance);
-MessageBox.Show("Created recipt with IKOF " + result.UIDRequest);
+
 var advanceReference = new
 {
     IKOFReference = result.UIDRequest,
@@ -325,7 +325,6 @@ var correctiveInvoice = ReceiptBuilder.Build(Guid.NewGuid(), 2)
     .CalculateTotalAmount(EFIPaymentTypeEnum.ADVANCE);
 
 result = await SendReceipt(correctiveInvoice);
-MessageBox.Show("Created recipt with IKOF " + result.UIDRequest);
 
 //3. Use partialy or full amount of the Advance payment
 var connectedInvoice = ReceiptBuilder.Build(Guid.NewGuid(), 3)
