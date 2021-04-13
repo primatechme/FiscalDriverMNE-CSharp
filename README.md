@@ -267,7 +267,7 @@ Za postavljanje korektivnog, ili sumarnog racuna, koristimo sledece metode:
 Ispod je dat primjer kompletnog ponistavanja racuna (moguce je i parcijalno ponistiti stavke racuna, sto se ne preporucuje). Kod ponistavanja racuna, kolicine su negativne.
 
 ``` 
-//1. Create receipt
+  //1. Create receipt
   var receipt = ReceiptBuilder.Build(Guid.NewGuid(), 1)
         ...
         .AddSaleItem("1", "Coca Cola 0.5", 2, 2.5m, 21m)
@@ -280,7 +280,7 @@ Ispod je dat primjer kompletnog ponistavanja racuna (moguce je i parcijalno poni
       IssuedAt = receipt.ReceiptTime
   };
 
-  //2. Delate receipt
+  //2. Delete receipt
   var correctiveReceipt = ReceiptBuilder.Build(Guid.NewGuid(), 2)
       ...
       .SetCorrectiveInvoice()
