@@ -41,7 +41,7 @@ Nakon toga pozivamo servis sa slanje depozita. __FiscalApiService__ je HttpClien
 
 ```
 var service = new FiscalApiService(BASE_URL, TOKEN);
-return await service.CreateDeposit(deposit.ToXMLModel());
+return await service.CreateDeposit(deposit);
 ```
 
 ## Odgovor servisa
@@ -141,13 +141,13 @@ foreach(var saleRow in sales)
 
 receipt.CalculateTotalAmount(EFIPaymentTypeEnum.BANKNOTE);
 
-return await service.CreateReceipt(receipt.ToXMLModel());
+return await service.CreateReceipt(receipt);
 ```   
 
 Kreirani racun saljemo istim servisom, kao kod depozita, metodom _CreateReceipt_
 ``` 
 var service = new FiscalApiService(BASE_URL, TOKEN);
-return await service.CreateReceipt(receipt.ToXMLModel());
+return await service.CreateReceipt(receipt);
 ``` 
 
 ## Primjer bezgotovinskog racuna
