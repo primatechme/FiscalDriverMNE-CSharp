@@ -141,7 +141,7 @@ foreach(var saleRow in sales)
     receipt.AddSaleItem(saleRow.ItemCode, saleRow.ItemName, saleRow.Quantity, saleRow.Price, saleRow.TaxRate);
 }
 
-receipt.CalculateTotalAmount("CASH")
+receipt.CalculateTotalAmount("CASH");
 
 return await service.CreateReceipt(receipt.ToXMLModel());
 ```   
