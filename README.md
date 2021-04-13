@@ -227,9 +227,7 @@ service.GetImage(url);
 service.GetBase64(url);
 ``` 
 
-ili biblioteku
-
-Primatech.FiscalDriver.Drawing i metode
+ili biblioteku _Primatech.FiscalDriver.Drawing_ i metode
 
 ``` 
 //Jpeg
