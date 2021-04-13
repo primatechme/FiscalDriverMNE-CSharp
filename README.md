@@ -31,12 +31,10 @@ U slucaju da zelimo povuci novac iz kase saljemo iznos manji od nule.
 __Bitno:__ Za gotovinske racune, svaki radni dan je neophodno zapoceti unosom depozita.
 
 Prvo instanciramo model depozita. U konstruktoru se predaje kod elektronskog naplatnog uredjaja i iznos.
-Nakon toga mozemo podesiti i vrijeme slanje, iznos koji ce da override-uje iznos iz konstruktora, korisnika sa korisnickim imenom i kodom sa SEP portala.
+Nakon toga podesavamo korisnika sa korisnickim imenom i kodom sa SEP portala.
 
 ```
 var deposit = DepositBuilder.Build("**********", 25m)
-                 //.SetTime(DateTime.Now)
-                 //.SetAmount(25m)
                  .SetUser("Marko Markovic", "**********");
 ```
 Nakon toga pozivamo servis sa slanje depozita. __FiscalApiService__ je HttpClient koji koristi autorizaciju tokenom, prema adresi _BASE_URL_. 
@@ -101,7 +99,7 @@ var receipt = ReceiptBuilder.Build(Guid.NewGuid(), 1)
                 .AddSaleItem("19", "Sir Gauda", 2, 2.20m, 7m, 0)
                 //.AddPayment("ACCOUNT", 100m)
                 //.AddPayment("BUSINESSCARD", 20m);
-                .CalculateTotalAmount("BANKNOTE");
+                .CalculateTotalAmount(EFIPaymentTypeEnum.BANKNOTE);
 ```                  
 U primjeru su tri stavke, i citav kod za kreiranje racuna je povezan u jednu cjelinu kako bi se lakse objasnile moguce operacije, realniji primjer koda i mapiranja stavki i nacina placanja je dat ispod, pod pretpostavkom da imamo racun sa sledecim stavkama:
 
@@ -141,7 +139,7 @@ foreach(var saleRow in sales)
     receipt.AddSaleItem(saleRow.ItemCode, saleRow.ItemName, saleRow.Quantity, saleRow.Price, saleRow.TaxRate);
 }
 
-receipt.CalculateTotalAmount("CASH");
+receipt.CalculateTotalAmount(EFIPaymentTypeEnum.BANKNOTE);
 
 return await service.CreateReceipt(receipt.ToXMLModel());
 ```   
@@ -219,12 +217,28 @@ Broj racuna prikazati u formatu:
 
 __{BusinessUnitCode}/{DocumentNumber}/{CreationDate.Year}/{TCRCode}__
 
-# Crtanje QR koda
-QR kod ne smije biti manji od 2.1 cm na racunu. Moguce je koristiti biblioteku za kreiranje QR koda, preko metoda
+## Crtanje QR koda (funkcionalnost u izradi)
+QR kod ne smije biti manji od 2.1 cm na racunu. Moguce je koristiti slededece API-je za kreiranje QR koda
 
-__TODO__
+``` 
+//Jpeg
+service.GetImage(url);
+//Base64
+service.GetBase64(url);
+``` 
 
-### Stavke
+ili biblioteku
+
+Primatech.FiscalDriver.Drawing i metode
+
+``` 
+//Jpeg
+QRCodeHelper.GetImage(url);
+//Base64
+QRCodeHelper.GetBase64(url);
+``` 
+
+## Stavke
 Stavke dodajemo na sledeci nacin
 
 ``` 
@@ -233,13 +247,154 @@ Stavke dodajemo na sledeci nacin
     receipt.AddSaleItem(saleRow.ItemCode, saleRow.ItemName, saleRow.Quantity, saleRow.Price, saleRow.TaxRate);
 }
 ``` 
-## Vrste racuna
+# Vrste racuna
+Osim standardnih racuna, moguce je i brisanje racuna, kreiranje avansnih racuna i porudzbina.
 
-### Korektivni racuni
+Tipovi u modelu su:
+- INVOICE - racun, sve stavke moraju imati pozitivne kolicine
+- CORRECTIVE_INVOICE - korektivni racuni, potrebno je navesti i povezane racune koji se koriguju ovim racunom, kolicine su negativne
+- SUMMARY_INVOICE - grupni racuni, potrebno je navesti i povezane racune kojima je nacin placanja ORDER, a koji se zavtvaraju ovim racunom
 
-### Avansi
+Za postavljanje korektivnog, ili sumarnog racuna, koristimo sledece metode:
 
-## Nacini placanja
+```
+... 
+.SetCorrectiveInvoice()
+...
+.SetSummaryInvoice()
+...
+``` 
+
+## Korektivni racuni
+Ispod je dat primjer kompletnog ponistavanja racuna (moguce je i parcijalno ponistiti stavke racuna, sto se ne preporucuje). Kod ponistavanja racuna, kolicine su negativne.
+
+``` 
+//1. Create receipt
+  var receipt = ReceiptBuilder.Build(Guid.NewGuid(), 1)
+        ...
+        .AddSaleItem("1", "Coca Cola 0.5", 2, 2.5m, 21m)
+        .CalculateTotalAmount(EFIPaymentTypeEnum.CARD);
+
+  var result = await SendReceipt(receipt);
+  var receiptReference = new
+  {
+      IKOFReference = result.UIDRequest,
+      IssuedAt = receipt.ReceiptTime
+  };
+
+  //2. Delate receipt
+  var correctiveReceipt = ReceiptBuilder.Build(Guid.NewGuid(), 2)
+      ...
+      .SetCorrectiveInvoice()
+      .AddIKOFReference(receiptReference.IKOFReference, receiptReference.IssuedAt)
+      .AddSaleItem("1", "Coca Cola 0.5", -2, 2.5m, 21m)
+      .CalculateTotalAmount(EFIPaymentTypeEnum.CARD);
+
+  result = await SendReceipt(correctiveReceipt);
+``` 
+
+Novi racun kojim korigujemo stavke polaznog racuna moze da sadrzi referencu na polazni racun.
+``` 
+  ...
+  .AddIKOFReference(receipt.IKOFReference, receipt.IssuedAt)
+  ...
+``` 
+
+## Avansi
+
+Avans mozemo iskoristiti u potpunosti, ili djelimicno. Prije svake upotrebe avansa, dio ili citav avansni racun koji se koristi se ponistava korektivnim racunom (postavljamo tip racuna __SetCorrectiveInvoice__ i dodajemo referencu na avansni racun __AddIKOFReference__). Na kraju se kreira racun koji takodje sadrzi referencu na grupni racun (__AddIKOFReference__).
+
+``` 
+//1. Create advance
+var advance = ReceiptBuilder.Build(Guid.NewGuid(), 1)
+      ...
+      .AddSaleItem("1", "Avans za gradjevinski materijal", 1, 400m, 21m)
+      .CalculateTotalAmount(EFIPaymentTypeEnum.ADVANCE);
+
+var result = await SendReceipt(advance);
+MessageBox.Show("Created recipt with IKOF " + result.UIDRequest);
+var advanceReference = new
+{
+    IKOFReference = result.UIDRequest,
+    IssuedAt = advance.ReceiptTime
+};
+//2. Delate partialy or full amount of the advance payment
+var correctiveInvoice = ReceiptBuilder.Build(Guid.NewGuid(), 2)
+    ...
+    .SetCorrectiveInvoice()
+    .AddIKOFReference(advanceReference.IKOFReference, advanceReference.IssuedAt)
+    .AddSaleItem("1", "Avans za gradjevinski materijal", -1, 150m, 21m)
+    .CalculateTotalAmount(EFIPaymentTypeEnum.ADVANCE);
+
+result = await SendReceipt(correctiveInvoice);
+MessageBox.Show("Created recipt with IKOF " + result.UIDRequest);
+
+//3. Use partialy or full amount of the Advance payment
+var connectedInvoice = ReceiptBuilder.Build(Guid.NewGuid(), 3)
+    ...
+    .AddIKOFReference(advanceReference.IKOFReference, advanceReference.IssuedAt)
+    .AddSaleItem("2", "Gradjevinski materijal tip 1", 1, 100m, 21m)
+    .AddSaleItem("3", "Gradjevinski materijal tip 2", 1, 50m, 21m)
+    .CalculateTotalAmount(EFIPaymentTypeEnum.ACCOUNT);
+
+result = await SendReceipt(connectedInvoice);
+``` 
+
+## Porudzbine
+
+U ugostiteljstvu se mogu kreirati prvo porudzbine, nacin placanja ORDER, potom se na jedan grupni racun dodati sve stavke iz svih porudzbina. U grupnom racunu navesti tip upotrebom metoda __SetSummaryInvoice__. Dodati na grupni racun i sve reference na sve porudzbine za koje se kreira grupni racun metodom __AddIKOFReference__.
+``` 
+var order1 = ReceiptBuilder.Build(Guid.NewGuid(), 1)
+      ...
+      .AddSaleItem("1", "Coca Cola 0.25l", 2, 2.50m, 21m)
+      .CalculateTotalAmount(EFIPaymentTypeEnum.ORDER);
+
+  var result=await SendReceipt(order1);
+  var firstOrder = new
+  {
+      IKOFReference = result.UIDRequest,
+      IssuedAt = order1.ReceiptTime
+  };
+  var order2 = ReceiptBuilder.Build(Guid.NewGuid(), 2)
+      ...
+      .AddSaleItem("2", "Fanta 0.25l", 1, 1.50m, 21m)
+      .AddSaleItem("2", "Bavaria", 1, 3.50m, 21m)
+      .CalculateTotalAmount(EFIPaymentTypeEnum.ORDER);
+
+  result = await SendReceipt(order2);
+  var secondOrder = new
+  {
+      IKOFReference = result.UIDRequest,
+      IssuedAt = order2.ReceiptTime
+  };
+
+  //summary invoice
+  //1. Set Header
+  var receipt = ReceiptBuilder.Build(Guid.NewGuid(), 3)
+      ...
+      .SetSeller(_seller.Name, _seller.VATNumber, _seller.Address);
+
+  //2. Add items from all orders
+  foreach (var saleItem in order1.Sales)
+  {
+      receipt.AddSaleItem(saleItem);
+  }
+  foreach (var saleItem in order2.Sales)
+  {
+      receipt.AddSaleItem(saleItem);
+  }
+  //3. Set type (summary), and add references to the orders
+  receipt.SetSummaryInvoice();
+  receipt.AddIKOFReference(firstOrder.IKOFReference, firstOrder.IssuedAt);
+  receipt.AddIKOFReference(secondOrder.IKOFReference, secondOrder.IssuedAt);
+
+  //4. Set payment type of summary invoice
+  receipt.CalculateTotalAmount(EFIPaymentTypeEnum.CARD);
+
+  result = await SendReceipt(receipt);
+```
+
+# Nacini placanja
     
 Gotovinski nacini placanja su
 - BANKNOTE
@@ -261,12 +416,15 @@ Ostali nacini placanja su i
 
 Nacine placanja mozemo dodati redom, sa iznosom (pojedinacno ili kombinovano placanje)
 ``` 
-.AddPayment("ACCOUNT", 100m)
+.AddPayment(EFIPaymentTypeEnum.ACCOUNT, 100m)
 ``` 
 ili bez iznosa, samo za pojedinacno placanje
 ``` 
-.CalculateTotalAmount("ACCOUNT");
+.CalculateTotalAmount(EFIPaymentTypeEnum.ACCOUNT);
 ``` 
+
+Za nacine placanja, koristiti enumeraciju __EFIPaymentTypeEnum__.
+
 # Greske u integraciji fiskalnog drajvera
 
 ## Greska u nekompatibilnosti *Newtonsoft.Json* biblioteke
