@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\libs\PointOfSale\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,8 +49,11 @@
     <Compile Include="JSON\Requests\EFIDeposit.cs" />
     <Compile Include="JSON\Requests\EFIPaymentItem.cs" />
     <Compile Include="JSON\Requests\EFIReceipt.cs" />
+    <Compile Include="JSON\Requests\EFIReceiptTypeEnum.cs" />
+    <Compile Include="JSON\Requests\EFIResponseTypeEnum.cs" />
     <Compile Include="JSON\Requests\EFISaleItem.cs" />
     <Compile Include="JSON\Requests\EFIUser.cs" />
+    <Compile Include="JSON\Requests\EFIPaymentTypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XML\Base\BaseEFCommand.cs" />
     <Compile Include="XML\Requests\EFClient.cs" />

@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\libs\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,9 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\JsonHelpers.cs" />
     <Compile Include="Helpers\ModelConversionHelpers.cs" />
     <Compile Include="Infrastructure\Builders\DepositBuilder.cs" />
-    <Compile Include="Infrastructure\EFiscalManagerSimplified.cs" />
     <Compile Include="Infrastructure\FiscalApiService.cs" />
     <Compile Include="Helpers\HttpClientHelper.cs" />
     <Compile Include="Helpers\XMLSerializerHelper.cs" />

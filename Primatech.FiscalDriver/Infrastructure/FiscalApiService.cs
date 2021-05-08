@@ -1,5 +1,6 @@
 ﻿using Primatech.FiscalDriver.Helpers;
 using Primatech.FiscalDriver.Models;
+using Primatech.FiscalModels.JSON.Requests;
 using Primatech.FiscalModels.XML.Requests;
 using Primatech.FiscalModels.XML.Responses;
 using System;
@@ -25,8 +26,6 @@ namespace Primatech.FiscalDriver.Infrastructure
 
         public async Task<EFCommandResponse> CreateReceipt(EFiscalReceiptCommand command)
         {
-            //var url = baseUrl + "api/efiscal/fiscalReceipt";
-
             return await BaseUrl
                     .WithClient(Client)
                     .AppendPathSegment("api/efiscal/fiscalReceipt")
@@ -36,10 +35,13 @@ namespace Primatech.FiscalDriver.Infrastructure
                     .PostJsonAsync<EFCommandResponse>(command);
         }
 
+        public async Task<EFCommandResponse> CreateReceipt(EFIReceipt command)
+        {
+            return await CreateReceipt(command.ToXMLModel());
+        }
+
         public async Task<EFCommandResponse> CreateDeposit(EFDepositCommand command)
         {
-            //try
-            //{
                 return await BaseUrl
                    .WithClient(Client)
                    .AppendPathSegment(
@@ -50,13 +52,15 @@ namespace Primatech.FiscalDriver.Infrastructure
                    .UseUri()
                    .PostJsonAsync(command)
                    .ReceiveJson<EFTCRCommandResponse>();
-            //}catch(Exception ex)
-            //{
-                //return null;
-            //}
+        }
+
+        public async Task<EFCommandResponse> CreateDeposit(EFIDeposit command)
+        {
+            return await CreateDeposit(command.ToXMLModel());
         }
 
 
+        //undocumented API
         public async Task<EFTCRCommandResponse> CreateTCR(string baseUrl, EFTCRCommand model)
         {
             return await BaseUrl

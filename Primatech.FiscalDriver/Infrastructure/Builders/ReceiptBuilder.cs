@@ -13,7 +13,7 @@ namespace Primatech.FiscalDriver.Infrastructure.Builders
         {
             return new EFIReceipt
             {
-                ReceiptType="INVOICE",
+                ReceiptType = "" + EFIReceiptTypeEnum.INVOICE,
                 ReceiptUniqueIdentifier = receiptIdentifier,
                 TCRCode = TCRCode,
                 ReceiptNumber = receiptNumber,
@@ -26,7 +26,7 @@ namespace Primatech.FiscalDriver.Infrastructure.Builders
         {
             return new EFIReceipt
             {
-                ReceiptType = "INVOICE",
+                ReceiptType = "" + EFIReceiptTypeEnum.INVOICE,
                 ReceiptUniqueIdentifier = receiptIdentifier,
                 TCRCode = TCRCode
             };
@@ -36,7 +36,7 @@ namespace Primatech.FiscalDriver.Infrastructure.Builders
         {
             return new EFIReceipt
             {
-                ReceiptType = "INVOICE",
+                ReceiptType = "" + EFIReceiptTypeEnum.INVOICE,
                 ReceiptUniqueIdentifier = receiptIdentifier,
                 ReceiptNumber = receiptNumber
             };
@@ -56,9 +56,31 @@ namespace Primatech.FiscalDriver.Infrastructure.Builders
 
         public static EFIReceipt SetCorrectiveInvoice(this EFIReceipt receipt)
         {
-            receipt.ReceiptType = "CORRECTIVE_INVOICE";
+            receipt.ReceiptType = ""+EFIReceiptTypeEnum.CORRECTIVE_INVOICE;
             return receipt;
         }
+
+        public static EFIReceipt SetSummaryInvoice(this EFIReceipt receipt)
+        {
+            receipt.ReceiptType = "" + EFIReceiptTypeEnum.SUMMARY_INVOICE;
+            return receipt;
+        }
+
+        public static EFIReceipt AddIKOFReference(this EFIReceipt receipt,string IKOFReference,DateTime issuedAt)
+        {
+            if (receipt.ConnectedDocuments == null)
+            {
+                receipt.ConnectedDocuments = new List<EFIConnectedDocument>();
+            }
+            receipt.ConnectedDocuments.Add(new EFIConnectedDocument()
+            {
+                IKOF=IKOFReference,
+                IssuedAt= issuedAt
+
+            });
+            return receipt;
+        }
+
 
         public static EFIReceipt SetDates(this EFIReceipt receipt, DateTime receiptTime, DateTime? dueDate)
         {
@@ -119,6 +141,16 @@ namespace Primatech.FiscalDriver.Infrastructure.Builders
             return receipt;
         }
 
+        public static EFIReceipt AddSaleItem(this EFIReceipt receipt, EFISaleItem saleItem)
+        {
+            if (receipt.Sales == null)
+            {
+                receipt.Sales = new List<EFISaleItem>();
+            }
+            receipt.Sales.Add(saleItem);
+            return receipt;
+        }
+
         public static EFIReceipt AddSaleItem(this EFIReceipt receipt, string itemCode, string itemName, decimal quantity, decimal price, decimal taxRate)
         {
             return AddSaleItem(receipt, itemCode, itemName, quantity, price, taxRate,0);
@@ -149,6 +181,21 @@ namespace Primatech.FiscalDriver.Infrastructure.Builders
             return receipt;
         }
 
+        public static EFIReceipt AddPayment(this EFIReceipt receipt, EFIPaymentTypeEnum paymentType, decimal amount)
+        {
+            if (receipt.Payments == null)
+            {
+                receipt.Payments = new List<EFIPaymentItem>();
+            }
+            receipt.Payments.Add(new EFIPaymentItem
+            {
+                PaymentType = paymentType.ToDecriptionString(),
+                Amount = amount,
+            });
+            return receipt;
+        }
+
+
         public static EFIReceipt CalculateTotalAmount(this EFIReceipt receipt, string paymentType)
         {
             receipt.Payments = new List<EFIPaymentItem>();
@@ -160,23 +207,34 @@ namespace Primatech.FiscalDriver.Infrastructure.Builders
             return receipt;
         }
 
+        public static EFIReceipt CalculateTotalAmount(this EFIReceipt receipt, EFIPaymentTypeEnum paymentType)
+        {
+            receipt.Payments = new List<EFIPaymentItem>();
+            receipt.Payments.Add(new EFIPaymentItem
+            {
+                PaymentType = paymentType.ToDecriptionString(),
+                Amount = receipt.Sales.Sum(item => item.Price * item.Quantity * (1 - item.DiscountPercentage / 100))
+            });
+            return receipt;
+        }
+
         public static EFIReceipt SetJsonResponse(this EFIReceipt receipt)
         {
-            //receipt.ResponseType = "JSON";
+            receipt.ResponseType = ""+ EFIFormatTypeEnum.JSON;
             return receipt;
         }
 
         public static EFIReceipt SetXMLResponse(this EFIReceipt receipt)
         {
-            //receipt.ResponseType = "XML";
+            receipt.ResponseType = "" + EFIFormatTypeEnum.XML;
             return receipt;
         }
 
-        public static EFIReceipt SetTextResponse(this EFIReceipt receipt)
-        {
-            //receipt.ResponseType = "TXT";
-            return receipt;
-        }
+        //public static EFIReceipt SetTextResponse(this EFIReceipt receipt)
+        //{
+        //    //receipt.ResponseType = "TXT";
+        //    return receipt;
+        //}
 
     }
 }

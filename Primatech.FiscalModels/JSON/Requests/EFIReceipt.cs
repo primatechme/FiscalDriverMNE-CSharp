@@ -22,9 +22,10 @@ namespace Primatech.FiscalModels.JSON.Requests
         public IList<EFIConnectedDocument> ConnectedDocuments { get; set; }
         public IList<EFISaleItem> Sales { get; set; }
         public IList<EFIPaymentItem> Payments { get; set; }
+        public string ResponseType{ get; set; }
 
-       
-    }
+
+}
 
     public class EFIConnectedDocument
     {

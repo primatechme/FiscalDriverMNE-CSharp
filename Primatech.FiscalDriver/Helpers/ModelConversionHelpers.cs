@@ -39,20 +39,28 @@ namespace Primatech.FiscalDriver.Helpers
 
             //set sales
             Func<IEnumerable<EFISaleItem>, EFSales> SetSales = sales =>
-                 new EFSales()
-                 {
-                     ItemSaleRow =
-                     sales.Select(item => new EFItemSaleRow()
-                     {
-                         ItemCode = item.ItemCode,
-                         ItemName = item.ItemName,
-                         Price = item.Price,
-                         DiscountPercentage = item.DiscountPercentage,
-                         Quantity = item.Quantity,
-                         TaxRate = item.TaxRate
-                     }
-                 ).ToList()
-                 };
+            {
+                EFSales salesGroup = null;
+                if (sales != null)
+                {
+                    salesGroup = new EFSales()
+                    {
+                        ItemSaleRow =
+                    sales.Select(item => new EFItemSaleRow()
+                    {
+                        ItemCode = item.ItemCode,
+                        ItemName = item.ItemName,
+                        Price = item.Price,
+                        DiscountPercentage = item.DiscountPercentage,
+                        Quantity = item.Quantity,
+                        TaxRate = item.TaxRate
+                    }
+                ).ToList()
+                    };
+                }
+
+                return salesGroup;
+            };
 
             //set payments
             Func<IEnumerable<EFIPaymentItem>, EFPayments> SetPayments = payments =>
@@ -67,24 +75,45 @@ namespace Primatech.FiscalDriver.Helpers
                     ).ToList()
                 };
 
+            Func<IEnumerable<EFIConnectedDocument>,EFConnectedDocuments> SetConnectedDocuments = connectedDocs =>
+            {
+                if (connectedDocs != null)
+                {
+                    var list = new List<EFDocumentRow>();
+                    foreach (var item in connectedDocs)
+                    {
+                        list.Add(new EFDocumentRow()
+                        {
+                            Uid=item.IKOF,
+                            Type = "CORRECTIVE",
+                            IssueDate = item.IssuedAt
+                        });
+                    }
+                    return new EFConnectedDocuments()
+                    {
+                        DocumentRow = list
+                    };
+                }
+                return null;
+            };
+
             var command = new EFiscalReceiptCommand()
             {
                 Uid = receipt.ReceiptUniqueIdentifier.ToString(),
                 ENUIdentifier = receipt.TCRCode,
                 Type = "JSON",//EFiscalReceiptCommandType
-                DocumentType = "INVOICE",//EFiscalReceiptCommandDocumentType
+                DocumentType = receipt.ReceiptType,//"INVOICE",//EFiscalReceiptCommandDocumentType
                 DocumentNumber = receipt.ReceiptNumber,
                 IsNoCashReceipt = !receipt.IsCashReceipt,
                 DateSend = receipt.ReceiptTime,
                 User = SetUser(receipt.User),
+                ConnectedDocuments = SetConnectedDocuments(receipt.ConnectedDocuments),
                 Seller = SetClient(receipt.Seller),
                 Buyer = SetClient(receipt.Buyer),
                 Sales = SetSales(receipt.Sales),
-                Payments = SetPayments(receipt.Payments) 
+                Payments = SetPayments(receipt.Payments)
             };
-
             return command;
-
         }
 
         public static EFDepositCommand ToXMLModel(this EFIDeposit deposit)
@@ -108,9 +137,8 @@ namespace Primatech.FiscalDriver.Helpers
                 Amount=deposit.Amount,
                 DepositType=deposit.DepositType
             };
-
+            
             return command;
-
         }
     }
 }

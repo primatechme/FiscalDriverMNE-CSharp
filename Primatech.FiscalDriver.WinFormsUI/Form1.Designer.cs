@@ -53,6 +53,10 @@
             this.btnSaveResponse = new System.Windows.Forms.Button();
             this.btnLoadRequest = new System.Windows.Forms.Button();
             this.btnSendDepositFromRequestField = new System.Windows.Forms.Button();
+            this.btnTestCorrectiveInvoice = new System.Windows.Forms.Button();
+            this.btnTestAdvanceInvoice = new System.Windows.Forms.Button();
+            this.btnTestOrderInvoice = new System.Windows.Forms.Button();
+            this.chkSaveToXml = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnInitialDeposit
@@ -288,11 +292,55 @@
             this.btnSendDepositFromRequestField.UseVisualStyleBackColor = true;
             this.btnSendDepositFromRequestField.Click += new System.EventHandler(this.btnSendDepositFromRequestField_Click);
             // 
+            // btnTestCorrectiveInvoice
+            // 
+            this.btnTestCorrectiveInvoice.Location = new System.Drawing.Point(9, 334);
+            this.btnTestCorrectiveInvoice.Name = "btnTestCorrectiveInvoice";
+            this.btnTestCorrectiveInvoice.Size = new System.Drawing.Size(238, 23);
+            this.btnTestCorrectiveInvoice.TabIndex = 26;
+            this.btnTestCorrectiveInvoice.Text = "8. Test corrective invoice";
+            this.btnTestCorrectiveInvoice.UseVisualStyleBackColor = true;
+            this.btnTestCorrectiveInvoice.Click += new System.EventHandler(this.btnTestCorrectiveInvoice_Click);
+            // 
+            // btnTestAdvanceInvoice
+            // 
+            this.btnTestAdvanceInvoice.Location = new System.Drawing.Point(9, 363);
+            this.btnTestAdvanceInvoice.Name = "btnTestAdvanceInvoice";
+            this.btnTestAdvanceInvoice.Size = new System.Drawing.Size(238, 23);
+            this.btnTestAdvanceInvoice.TabIndex = 27;
+            this.btnTestAdvanceInvoice.Text = "9. Test advance invoice";
+            this.btnTestAdvanceInvoice.UseVisualStyleBackColor = true;
+            this.btnTestAdvanceInvoice.Click += new System.EventHandler(this.btnTestAdvanceInvoice_Click);
+            // 
+            // btnTestOrderInvoice
+            // 
+            this.btnTestOrderInvoice.Location = new System.Drawing.Point(9, 392);
+            this.btnTestOrderInvoice.Name = "btnTestOrderInvoice";
+            this.btnTestOrderInvoice.Size = new System.Drawing.Size(238, 23);
+            this.btnTestOrderInvoice.TabIndex = 28;
+            this.btnTestOrderInvoice.Text = "10. Test order invoice";
+            this.btnTestOrderInvoice.UseVisualStyleBackColor = true;
+            this.btnTestOrderInvoice.Click += new System.EventHandler(this.btnTestOrderInvoice_Click);
+            // 
+            // chkSaveToXml
+            // 
+            this.chkSaveToXml.AutoSize = true;
+            this.chkSaveToXml.Location = new System.Drawing.Point(9, 610);
+            this.chkSaveToXml.Name = "chkSaveToXml";
+            this.chkSaveToXml.Size = new System.Drawing.Size(195, 17);
+            this.chkSaveToXml.TabIndex = 29;
+            this.chkSaveToXml.Text = "Save request and response as XML";
+            this.chkSaveToXml.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(895, 631);
+            this.Controls.Add(this.chkSaveToXml);
+            this.Controls.Add(this.btnTestOrderInvoice);
+            this.Controls.Add(this.btnTestAdvanceInvoice);
+            this.Controls.Add(this.btnTestCorrectiveInvoice);
             this.Controls.Add(this.btnSendDepositFromRequestField);
             this.Controls.Add(this.btnLoadRequest);
             this.Controls.Add(this.btnSaveResponse);
@@ -356,6 +404,10 @@
         private System.Windows.Forms.Button btnSaveResponse;
         private System.Windows.Forms.Button btnLoadRequest;
         private System.Windows.Forms.Button btnSendDepositFromRequestField;
+        private System.Windows.Forms.Button btnTestCorrectiveInvoice;
+        private System.Windows.Forms.Button btnTestAdvanceInvoice;
+        private System.Windows.Forms.Button btnTestOrderInvoice;
+        private System.Windows.Forms.CheckBox chkSaveToXml;
     }
 }
 
